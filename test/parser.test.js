@@ -18,7 +18,13 @@ var parser = require('../lib/parser');
     source: '<div id="foo">bar</div>'
   },
   {
-    source: '<!DOCTYPE html>\n\n<html><head></head>\n<body></body></html>'
+    source: '<!DOCTYPE html>\n<html><head></head>\n<body></body></html>'
+  },
+  {
+    source: '<script>foo < bar;</script>'
+  },
+  {
+    source: '<style>jeremiah: "candy"</style>'
   }
 ].forEach(function (test) {
   

@@ -25,7 +25,9 @@ CharacterReference
   / '&' { throw new Error('Invalid character reference'); }
 
 Tag
-  = StartTag
+  = ScriptTag
+  / StyleTag
+  / StartTag
   / EndTag
   / DoctypeHtml5
 
@@ -57,6 +59,28 @@ EndTag
       name: name,
       end: true,
       source: "</" + name + ">",
+      toString: sourceToString
+    };
+  }
+
+ScriptTag
+  = '<script' attributes:Attributes '>' script:([^<] / '<' !'/script>' { return '<'; })* '</script>' {
+    return {
+      type: "ScriptTag",
+      attributes: attributes,
+      script: script.join(""),
+      source: "<script" + attributes.join("") + ">" + script.join("") + "</script>",
+      toString: sourceToString
+    };
+  }
+
+StyleTag
+  = '<style' attributes:Attributes '>' style:([^<] / '<' !'/style>' { return '<'; })* '</style>' {
+    return {
+      type: "StyleTag",
+      attributes: attributes,
+      style: style.join(""),
+      source: "<style" + attributes.join("") + ">" + style.join("") + "</style>",
       toString: sourceToString
     };
   }
