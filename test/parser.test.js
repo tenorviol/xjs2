@@ -1,40 +1,67 @@
 var parser = require('../lib/parser');
 
 [
+
+  // data
+  // note: character references will be parsed in stage 2
   {
-    // parse character references in 2nd stage
     source: 'foo & bar &amp; fubar'
   },
+  
+  // null characters are illegal in data elements
   {
-    // null characters are illegal in data elements
-    source: 'null\0char',
+    source: 'illegal null\0char',
     error: true
   },
+  
+  // tag: void element with attributes
+  // note: the ambiguous ampersand here is illegal and should be caught in stage 2
   {
-    source: '<img id="double \'quoted\'" src="http://google.com/favicon.ico">'
+    source: '<img id="double \'quoted\'" src="http://google.com/?search=foo&bar">'
   },
+  
+  // Tag: self closing element with attributes
   {
-    source: "<img id='single \"quoted\"' src='http://google.com/favicon.ico'>"
+    source: "<img id='single \"quoted\"' src='http://google.com/favicon.ico'/>"
   },
+  
+  // null characters are illegal in tag attributes
   {
-    source: '<div id="null\0char">',
-    error:true
+    source: '<div id="illegal null\0char">',
+    error: true
   },
+  
+  // null characters are illegal in tag attributes
   {
-    source: '<中国:Nonsense 义勇军进行曲="Random characters I got from somewhere">'
+    source: "<div id='illegal null\0char'>",
+    error: true
   },
+  
+  // foreign elements may contain unicode characters
+  {
+    source: '<中国:Nonsense 义勇军进行曲="Chinese characters I copied from wikipedia">'
+  },
+  
+  // open tag, data, close tag
   {
     source: '<div id="foo">bar</div>'
   },
+  
+  // html5 doctype, with empty html document
   {
     source: '<!DOCTYPE html>\n<html><head></head>\n<body></body></html>'
   },
+  
+  // script tags can contain '<'
   {
-    source: '<script>foo < bar;</script>'
+    source: '<script>foo<bar;</script>'
   },
+  
+  // so can style (it's invalid css)
   {
-    source: '<style>jeremiah: "candy"</style>'
+    source: '<style>jeremiah <candy </style>'
   }
+
 ].forEach(function (test) {
   
   exports[test.source] = function (assert) {
