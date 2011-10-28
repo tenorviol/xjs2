@@ -109,7 +109,14 @@ EmptyAttribute
   }
 
 AttributeValue
+  = AttributeValueDoubleQuoted
+  / AttributeValueSingleQuoted
+
+AttributeValueDoubleQuoted
   = '"' value:[^"\0]* '"' { return '"' + value.join("") + '"'; }
+
+AttributeValueSingleQuoted
+  = '\'' value:[^'\0]* '\'' { return "'" + value.join("") + "'"; }
 
 Ws
   = space:(' ' / '\t' / '\n' / '\r')*  { return space.join(""); }

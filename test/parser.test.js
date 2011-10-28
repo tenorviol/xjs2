@@ -11,7 +11,10 @@ var parser = require('../lib/parser');
     error: true
   },
   {
-    source: '<img id="icon" src="http://google.com/favicon.ico">'
+    source: '<img id="double \'quoted\'" src="http://google.com/favicon.ico">'
+  },
+  {
+    source: "<img id='single \"quoted\"' src='http://google.com/favicon.ico'>"
   },
   {
     source: '<div id="null\0char">',
