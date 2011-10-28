@@ -5,10 +5,17 @@
 }
 
 start
-  = (Data / Tag)*
+  = ( Data
+    / DoctypeHtml5
+    / ProcessingInstruction
+    / ScriptTag
+    / StyleTag
+    / StartTag
+    / EndTag
+    )*
 
 Data
-  = data:([^&<] / CharacterReference)+ {
+  = data:[^<]+ {
     // TODO: null characters should throw
     return {
       type: 'Data',
@@ -16,20 +23,6 @@ Data
       toString: sourceToString
     };
   }
-
-CharacterReference
-  = '&amp;'
-  / '&lt;'
-  / '&gt;'
-  / '&quot;'
-  / '&' { throw new Error('Invalid character reference'); }
-
-Tag
-  = ScriptTag
-  / StyleTag
-  / StartTag
-  / EndTag
-  / DoctypeHtml5
 
 DoctypeHtml5
   = '<!DOCTYPE html>' {
@@ -128,4 +121,4 @@ Space
 //MarkupDeclaration
 
 ProcessingInstruction
-  = '<?' (!'?' / '?' !'>') '?>'  // TODO: lots of stuff, e.g. '?>' could be in a comment or string
+  = '<?' ([^?] / '?' !'>') '?>'  // TODO: lots of stuff, e.g. '?>' could be in a comment or string

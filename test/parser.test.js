@@ -8,8 +8,7 @@ var parser = require('../lib/parser');
     source: 'Dave &amp; Busters'
   },
   {
-    source: 'Dave & Busters',
-    error: true
+    source: 'Dave & Busters'
   },
   {
     source: '<img src="http://google.com/favicon.ico"> Google'
@@ -33,7 +32,7 @@ var parser = require('../lib/parser');
     assert[toThrowOrNot](function () {
       try {
         var result = parser.parse(test.source);
-        console.log(result);
+        //console.log(result);
         assert.equal(test.source, result.join(""));
       } catch (e) {
         test.error || console.log(e.toString());  // debug helper
