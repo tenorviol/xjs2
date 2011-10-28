@@ -15,7 +15,7 @@ start
     )*
 
 Data
-  = data:[^<]+ {
+  = data:[^<\0]+ {
     // TODO: null characters should throw
     return {
       type: 'Data',
@@ -34,19 +34,19 @@ DoctypeHtml5
   }
 
 StartTag
-  = '<' name:TagName attributes:Attributes close:'/'? '>' {
+  = '<' name:Name attributes:Attributes close:'/'? '>' {
     return {
       type: 'StartTag',
       name: name,
       attributes: attributes,
       close: close,
-      source: "<" + name + attributes + close + ">",
+      source: "<" + name + attributes.join("") + close + ">",
       toString: sourceToString
     };
   }
 
 EndTag
-  = '</' name:TagName '>' {
+  = '</' name:Name '>' {
     return {
       type: 'EndTag',
       name: name,
@@ -78,9 +78,6 @@ StyleTag
     };
   }
 
-TagName
-  = name:[a-z]+ { return name.join(""); }  // TODO: full xml support e.g. 'fb:profile-pic'
-
 Attributes
   = Attribute*
 
@@ -89,7 +86,7 @@ Attribute
   / EmptyAttribute
 
 EmptyAttribute
-  = w:Space name:AttributeName {
+  = w:Space name:Name {
     return {
       type: "Attribute",
       name: name,
@@ -99,7 +96,7 @@ EmptyAttribute
   }
 
 ValueAttribute
-  = w1:Space name:AttributeName w2:Space '=' w3:Space value:AttributeValue {
+  = w1:Space name:Name w2:Space '=' w3:Space value:AttributeValue {
     return {
       type: "Attribute",
       name: name,
@@ -108,9 +105,6 @@ ValueAttribute
       toString: sourceToString
     };
   }
-
-AttributeName
-  = TagName
 
 AttributeValue
   = '"' value:[^"]* '"' { return '"' + value.join("") + '"'; }
@@ -122,3 +116,16 @@ Space
 
 ProcessingInstruction
   = '<?' ([^?] / '?' !'>') '?>'  // TODO: lots of stuff, e.g. '?>' could be in a comment or string
+
+
+// Ref: Extensible Markup Language (XML) 1.1 (Second Edition)
+// http://www.w3.org/TR/2006/REC-xml11-20060816/#sec-common-syn
+
+Name
+  = first:NameStartChar rest:NameChar* { return first + rest.join(""); }
+
+NameStartChar
+  = [:A-Z_a-z\xC0-\xD6\xD8-\xF6\xF8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD]  // TODO: | [\u10000-\uEFFFF]
+
+NameChar
+  = NameStartChar / [-.0-9\u00B7\u0300-\u036F\u203F-\u2040]

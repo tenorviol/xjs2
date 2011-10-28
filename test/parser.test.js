@@ -2,16 +2,19 @@ var parser = require('../lib/parser');
 
 [
   {
-    source: 'foo'
+    // parse character references in 2nd stage
+    source: 'foo & bar &amp; fubar'
   },
   {
-    source: 'Dave &amp; Busters'
+    // null characters are illegal in data elements
+    source: 'foo\0bar',
+    error: true
   },
   {
-    source: 'Dave & Busters'
+    source: '<img id="icon" src="http://google.com/favicon.ico">'
   },
   {
-    source: '<img src="http://google.com/favicon.ico"> Google'
+    source: '<中国:Nonsense 义勇军进行曲="Random characters I got from somewhere">'
   },
   {
     source: '<div id="foo">bar</div>'
