@@ -33,6 +33,28 @@ DoctypeHtml5
     };
   }
 
+ScriptTag
+  = '<script' attributes:Attributes '>' script:([^<] / '<' !'/script>' { return '<'; })* '</script>' {
+    return {
+      type: "ScriptTag",
+      attributes: attributes,
+      script: script.join(""),
+      source: "<script" + attributes.join("") + ">" + script.join("") + "</script>",
+      toString: sourceToString
+    };
+  }
+
+StyleTag
+  = '<style' attributes:Attributes '>' style:([^<] / '<' !'/style>' { return '<'; })* '</style>' {
+    return {
+      type: "StyleTag",
+      attributes: attributes,
+      style: style.join(""),
+      source: "<style" + attributes.join("") + ">" + style.join("") + "</style>",
+      toString: sourceToString
+    };
+  }
+
 StartTag
   = '<' name:Name attributes:Attributes close:'/'? '>' {
     return {
@@ -56,27 +78,7 @@ EndTag
     };
   }
 
-ScriptTag
-  = '<script' attributes:Attributes '>' script:([^<] / '<' !'/script>' { return '<'; })* '</script>' {
-    return {
-      type: "ScriptTag",
-      attributes: attributes,
-      script: script.join(""),
-      source: "<script" + attributes.join("") + ">" + script.join("") + "</script>",
-      toString: sourceToString
-    };
-  }
-
-StyleTag
-  = '<style' attributes:Attributes '>' style:([^<] / '<' !'/style>' { return '<'; })* '</style>' {
-    return {
-      type: "StyleTag",
-      attributes: attributes,
-      style: style.join(""),
-      source: "<style" + attributes.join("") + ">" + style.join("") + "</style>",
-      toString: sourceToString
-    };
-  }
+// CDATA
 
 Attributes
   = Attribute*
@@ -85,18 +87,8 @@ Attribute
   = ValueAttribute
   / EmptyAttribute
 
-EmptyAttribute
-  = w:Space name:Name {
-    return {
-      type: "Attribute",
-      name: name,
-      source: w + name,
-      toString: sourceToString
-    };
-  }
-
 ValueAttribute
-  = w1:Space name:Name w2:Space '=' w3:Space value:AttributeValue {
+  = w1:Ws name:Name w2:Ws '=' w3:Ws value:AttributeValue {
     return {
       type: "Attribute",
       name: name,
@@ -106,16 +98,27 @@ ValueAttribute
     };
   }
 
-AttributeValue
-  = '"' value:[^"]* '"' { return '"' + value.join("") + '"'; }
+EmptyAttribute
+  = w:Ws name:Name {
+    return {
+      type: "Attribute",
+      name: name,
+      source: w + name,
+      toString: sourceToString
+    };
+  }
 
-Space
+AttributeValue
+  = '"' value:[^"\0]* '"' { return '"' + value.join("") + '"'; }
+
+Ws
   = space:(' ' / '\t' / '\n' / '\r')*  { return space.join(""); }
 
 //MarkupDeclaration
 
 ProcessingInstruction
   = '<?' ([^?] / '?' !'>') '?>'  // TODO: lots of stuff, e.g. '?>' could be in a comment or string
+
 
 
 // Ref: Extensible Markup Language (XML) 1.1 (Second Edition)

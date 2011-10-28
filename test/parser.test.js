@@ -7,11 +7,15 @@ var parser = require('../lib/parser');
   },
   {
     // null characters are illegal in data elements
-    source: 'foo\0bar',
+    source: 'null\0char',
     error: true
   },
   {
     source: '<img id="icon" src="http://google.com/favicon.ico">'
+  },
+  {
+    source: '<div id="null\0char">',
+    error:true
   },
   {
     source: '<中国:Nonsense 义勇军进行曲="Random characters I got from somewhere">'
