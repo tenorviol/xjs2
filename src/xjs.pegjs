@@ -80,6 +80,13 @@ EndTag
 
 // CDATA
 
+//MarkupDeclaration
+
+ProcessingInstruction
+  = '<?' ([^?] / '?' !'>') '?>'  // TODO: lots of stuff, e.g. '?>' could be in a comment or string
+
+
+
 Attributes
   = Attribute*
 
@@ -118,6 +125,8 @@ AttributeValueDoubleQuoted
 AttributeValueSingleQuoted
   = '\'' value:SingleQuotedText* "'" { return "'" + value.join("") + "'"; }
 
+
+
 DataText
   = !'<' c:Text { return c; }
 
@@ -138,10 +147,6 @@ SingleQuotedText
 Ws
   = space:(' ' / '\t' / '\n' / '\r')*  { return space.join(""); }
 
-//MarkupDeclaration
-
-ProcessingInstruction
-  = '<?' ([^?] / '?' !'>') '?>'  // TODO: lots of stuff, e.g. '?>' could be in a comment or string
 
 
 // Ref: Extensible Markup Language (XML) 1.1 (Second Edition)
