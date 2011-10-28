@@ -49,7 +49,7 @@ var parser = require('../lib/parser');
   
   // html5 doctype, with empty html document
   {
-    source: '<!DOCTYPE html>\n<html><head></head>\n<body></body></html>'
+    source: '<!DOCTYPE html>\n<html>\n  <head></head>\n  <body></body>\n</html>'
   },
   
   // script tags can contain '<'
@@ -60,6 +60,10 @@ var parser = require('../lib/parser');
   // so can style (it's invalid css)
   {
     source: '<style>jeremiah <candy </style>'
+  },
+  
+  {
+    source: '<![CDATA[Now <blink>THIS</blink> is real CDATA...]]>'
   }
 
 ].forEach(function (test) {

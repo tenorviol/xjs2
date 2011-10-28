@@ -12,6 +12,7 @@ start
     / StyleTag
     / StartTag
     / EndTag
+    / CDATA
     )*
 
 Data
@@ -78,7 +79,14 @@ EndTag
     };
   }
 
-// CDATA
+CDATA
+  = '<![CDATA[' text:CDATAText* ']]>' {
+    return {
+      type: 'cdata',
+      source: '<![CDATA[' + text.join("") + ']]>',
+      toString: sourceToString
+    }
+  }
 
 //MarkupDeclaration
 
@@ -143,6 +151,9 @@ DoubleQuotedText
 
 SingleQuotedText
   = !"'" c:Text { return c; }
+
+CDATAText
+  = !']]>' c:Text { return c; }
 
 Ws
   = space:(' ' / '\t' / '\n' / '\r')*  { return space.join(""); }
