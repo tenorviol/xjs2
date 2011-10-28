@@ -13,6 +13,7 @@ start
     / StartTag
     / EndTag
     / CDATA
+    / Comment
     )*
 
 Data
@@ -82,10 +83,19 @@ EndTag
 CDATA
   = '<![CDATA[' text:CDATAText* ']]>' {
     return {
-      type: 'cdata',
+      type: 'CDATA',
       source: '<![CDATA[' + text.join("") + ']]>',
       toString: sourceToString
     }
+  }
+
+Comment
+  = '<!--' !('>' / '->') text:CommentText* '-->' {
+    return {
+      type: 'Comment',
+      source: '<!--' + text.join("") + '-->',
+      toString: sourceToString
+    };
   }
 
 //MarkupDeclaration
@@ -154,6 +164,9 @@ SingleQuotedText
 
 CDATAText
   = !']]>' c:Text { return c; }
+
+CommentText
+  = !'--' c:Text { return c; }
 
 Ws
   = space:(' ' / '\t' / '\n' / '\r')*  { return space.join(""); }

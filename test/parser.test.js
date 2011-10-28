@@ -64,6 +64,29 @@ var parser = require('../lib/parser');
   
   {
     source: '<![CDATA[Now <blink>THIS</blink> is real CDATA...]]>'
+  },
+  
+  {
+    source: '<!-- comment -->'
+  },
+  
+  {
+    source: '<!--> illegal',
+    error: true
+  },
+  
+  {
+    source: '<!---> illegal',
+    error: true
+  },
+  
+  {
+    source: '<!----> LEGAL!!!'
+  },
+  
+  {
+    source: '<!-- no old school mdashes--allowed in comments -->',
+    error: true
   }
 
 ].forEach(function (test) {
