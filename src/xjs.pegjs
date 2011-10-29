@@ -101,7 +101,13 @@ Comment
 //MarkupDeclaration
 
 ProcessingInstruction
-  = '<?' ([^?] / '?' !'>') '?>'  // TODO: lots of stuff, e.g. '?>' could be in a comment or string
+  = '<?js' text:ProcessingInstructionText* '?>'  {
+    // TODO: lots of stuff, e.g. '?>' could be in a comment or string
+    return {
+      source: '<?js' + text.join("") + '?>',
+      toString: sourceToString
+    };
+  }
 
 
 
@@ -167,6 +173,9 @@ CDATAText
 
 CommentText
   = !'--' c:Text { return c; }
+
+ProcessingInstructionText
+  = !'?>' c:Text { return c; }
 
 Ws
   = space:(' ' / '\t' / '\n' / '\r')*  { return space.join(""); }

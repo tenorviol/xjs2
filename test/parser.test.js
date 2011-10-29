@@ -71,22 +71,26 @@ var parser = require('../lib/parser');
   },
   
   {
-    source: '<!--> illegal',
+    source: '<!--> illegal comment',
     error: true
   },
   
   {
-    source: '<!---> illegal',
+    source: '<!---> illegal comment',
     error: true
   },
   
   {
-    source: '<!----> LEGAL!!!'
+    source: '<!----> LEGAL COMMENT!!!'
   },
   
   {
-    source: '<!-- no old school mdashes--allowed in comments -->',
+    source: '<!-- no old school mdashes--allowed in comments either -->',
     error: true
+  },
+  
+  {
+    source: '<?js var foo="bar" ?>'
   }
 
 ].forEach(function (test) {
