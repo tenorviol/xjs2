@@ -5,7 +5,13 @@ var parser = require('../lib/parser');
   // data
   // note: character references will be parsed in stage 2
   {
-    source: 'foo & bar &amp; fubar'
+    source: 'foo & bar &amp; fubar',
+    tokens: [
+      {
+        type: 'Data',
+        source: 'foo & bar &amp; fubar'
+      }
+    ]
   },
   
   // null characters are illegal in data elements
@@ -89,8 +95,14 @@ var parser = require('../lib/parser');
     error: true
   },
   
+  // js processing instruction
   {
     source: '<?js var foo="bar" ?>'
+  },
+  
+  // js processing instruction
+  {
+    source: '<?= bar ?>'
   }
 
 ].forEach(function (test) {
@@ -100,8 +112,14 @@ var parser = require('../lib/parser');
     assert[toThrowOrNot](function () {
       try {
         var result = parser.parse(test.source);
-        //console.log(result);
+        console.log(result);
         assert.equal(test.source, result.join(""));
+        if (test.tokens) {
+          assert.equal(test.tokens.length, result.length);
+          for (var i = 0; i < test.tokens.length; i++) {
+            tokenEqual.call(assert, test.tokens[i], result[i]);
+          }
+        }
       } catch (e) {
         test.error || console.log(e.toString());  // debug helper
         throw e;  // re-throw
@@ -111,3 +129,12 @@ var parser = require('../lib/parser');
   };
   
 });
+
+function tokenEqual(token1, token2) {
+  for (key in token1) {
+    if (key === 'toString') {
+      continue;
+    }
+    this.equal(token1[key], token2[key]);
+  }
+}

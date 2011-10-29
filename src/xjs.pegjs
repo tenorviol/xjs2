@@ -101,6 +101,10 @@ Comment
 //MarkupDeclaration
 
 ProcessingInstruction
+  = JsProcessingInstruction
+  / OutputProcessingInstruction
+
+JsProcessingInstruction
   = '<?js' text:ProcessingInstructionText* '?>'  {
     // TODO: lots of stuff, e.g. '?>' could be in a comment or string
     return {
@@ -109,7 +113,13 @@ ProcessingInstruction
     };
   }
 
-
+OutputProcessingInstruction
+  = '<?=' text:ProcessingInstructionText* '?>' {
+    return {
+      source: '<?=' + text.join("") + '?>',
+      toString: sourceToString
+    };
+  }
 
 Attributes
   = Attribute*
