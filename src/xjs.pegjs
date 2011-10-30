@@ -1,6 +1,10 @@
 {
-  function sourceToString() {
-    return this.source;
+  function joinSources(objects) {
+    var source = '';
+    objects.forEach(function (object) {
+      source += object.source;
+    });
+    return source;
   }
 }
 
@@ -21,8 +25,7 @@ Data
     // TODO: null characters should throw
     return {
       type: 'Data',
-      source: data.join(""),
-      toString: sourceToString
+      source: data.join("")
     };
   }
 
@@ -30,8 +33,7 @@ DoctypeHtml5
   = '<!DOCTYPE html>' {
     return {
       type: "DOCTYPE",
-      source: "<!DOCTYPE html>",
-      toString: sourceToString
+      source: "<!DOCTYPE html>"
     };
   }
 
@@ -41,8 +43,7 @@ ScriptTag
       type: "ScriptTag",
       attributes: attributes,
       script: script.join(""),
-      source: "<script" + attributes.join("") + ">" + script.join("") + "</script>",
-      toString: sourceToString
+      source: "<script" + joinSources(attributes) + ">" + script.join("") + "</script>"
     };
   }
 
@@ -52,8 +53,7 @@ StyleTag
       type: "StyleTag",
       attributes: attributes,
       style: style.join(""),
-      source: "<style" + attributes.join("") + ">" + style.join("") + "</style>",
-      toString: sourceToString
+      source: "<style" + joinSources(attributes) + ">" + style.join("") + "</style>"
     };
   }
 
@@ -64,8 +64,7 @@ StartTag
       name: name,
       attributes: attributes,
       close: close,
-      source: "<" + name + attributes.join("") + close + ">",
-      toString: sourceToString
+      source: "<" + name + joinSources(attributes) + close + ">"
     };
   }
 
@@ -75,8 +74,7 @@ EndTag
       type: 'EndTag',
       name: name,
       end: true,
-      source: "</" + name + ">",
-      toString: sourceToString
+      source: "</" + name + ">"
     };
   }
 
@@ -84,8 +82,7 @@ CDATA
   = '<![CDATA[' text:CDATAText* ']]>' {
     return {
       type: 'CDATA',
-      source: '<![CDATA[' + text.join("") + ']]>',
-      toString: sourceToString
+      source: '<![CDATA[' + text.join("") + ']]>'
     }
   }
 
@@ -93,8 +90,7 @@ Comment
   = '<!--' !('>' / '->') text:CommentText* '-->' {
     return {
       type: 'Comment',
-      source: '<!--' + text.join("") + '-->',
-      toString: sourceToString
+      source: '<!--' + text.join("") + '-->'
     };
   }
 
@@ -108,16 +104,14 @@ JsProcessingInstruction
   = '<?js' text:ProcessingInstructionText* '?>'  {
     // TODO: lots of stuff, e.g. '?>' could be in a comment or string
     return {
-      source: '<?js' + text.join("") + '?>',
-      toString: sourceToString
+      source: '<?js' + text.join("") + '?>'
     };
   }
 
 OutputProcessingInstruction
   = '<?=' text:ProcessingInstructionText* '?>' {
     return {
-      source: '<?=' + text.join("") + '?>',
-      toString: sourceToString
+      source: '<?=' + text.join("") + '?>'
     };
   }
 
@@ -131,11 +125,9 @@ Attribute
 ValueAttribute
   = w1:Ws name:Name w2:Ws '=' w3:Ws value:AttributeValue {
     return {
-      type: "Attribute",
       name: name,
       value: value,
-      source: w1 + name + w2 + "=" + w3 + value,
-      toString: sourceToString
+      source: w1 + name + w2 + "=" + w3 + value
     };
   }
 
@@ -144,8 +136,7 @@ EmptyAttribute
     return {
       type: "Attribute",
       name: name,
-      source: w + name,
-      toString: sourceToString
+      source: w + name
     };
   }
 
