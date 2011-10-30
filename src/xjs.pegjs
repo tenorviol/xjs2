@@ -20,15 +20,6 @@ start
     / Comment
     )*
 
-Data
-  = data:DataText+ {
-    // TODO: null characters should throw
-    return {
-      type: 'Data',
-      source: data.join("")
-    };
-  }
-
 DoctypeHtml5
   = '<!DOCTYPE html>' {
     return {
@@ -38,24 +29,34 @@ DoctypeHtml5
   }
 
 ScriptTag
-  = '<script' attributes:Attributes '>' script:ScriptText* '</script>' {
+  = '<script' attributes:Attributes '>' script:ScriptInnards '</script>' {
     return {
       type: "ScriptTag",
       attributes: attributes,
-      script: script.join(""),
-      source: "<script" + joinSources(attributes) + ">" + script.join("") + "</script>"
+      inner: script,
+      source: "<script" + joinSources(attributes) + ">" + joinSources(script) + "</script>"
     };
   }
 
+ScriptInnards
+  = ( ScriptData
+    / ProcessingInstruction
+    )*
+
 StyleTag
-  = '<style' attributes:Attributes '>' style:StyleText* '</style>' {
+  = '<style' attributes:Attributes '>' style:StyleInnards '</style>' {
     return {
       type: "StyleTag",
       attributes: attributes,
-      style: style.join(""),
-      source: "<style" + joinSources(attributes) + ">" + style.join("") + "</style>"
+      inner: style,
+      source: "<style" + joinSources(attributes) + ">" + joinSources(style) + "</style>"
     };
   }
+
+StyleInnards
+  = ( StyleData
+    / ProcessingInstruction
+    )*
 
 StartTag
   = '<' name:Name attributes:Attributes close:'/'? '>' {
@@ -79,12 +80,18 @@ EndTag
   }
 
 CDATA
-  = '<![CDATA[' text:CDATAText* ']]>' {
+  = '<![CDATA[' data:CDATAInnards ']]>' {
     return {
       type: 'CDATA',
-      source: '<![CDATA[' + text.join("") + ']]>'
+      inner: data,
+      source: '<![CDATA[' + joinSources(data) + ']]>'
     }
   }
+
+CDATAInnards
+  = ( CDATAData
+    / ProcessingInstruction
+    )*
 
 Comment
   = '<!--' !('>' / '->') text:CommentText* '-->' {
@@ -152,16 +159,50 @@ AttributeValueSingleQuoted
 
 
 
+Data
+  = data:DataText+ {
+    return {
+      type: 'Data',
+      source: data.join("")
+    };
+  }
+
+ScriptData
+  = data:ScriptText+ {
+    return {
+      type: 'Data',
+      source: data.join("")
+    };
+  }
+
+StyleData
+  = data:StyleText+ {
+    return {
+      type: 'Data',
+      source: data.join("")
+    };
+  }
+
+CDATAData
+  = data:CDATAText+ {
+    return {
+      type: 'Data',
+      source: data.join("")
+    }
+  }
+
+
+
 DataText
   = !'<' c:Text { return c; }
 
 ScriptText
   = DataText
-  / '<' !'/script' { return '<'; }
+  / '<' !('?' / '/script') { return '<'; }
 
 StyleText
   = DataText
-  / '<' !'/style' { return '<'; }
+  / '<' !('?' / '/style') { return '<'; }
 
 DoubleQuotedText
   = !'"' c:Text { return c; }
@@ -170,7 +211,7 @@ SingleQuotedText
   = !"'" c:Text { return c; }
 
 CDATAText
-  = !']]>' c:Text { return c; }
+  = !('<?' / ']]>') c:Text { return c; }
 
 CommentText
   = !'--' c:Text { return c; }

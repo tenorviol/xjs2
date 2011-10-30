@@ -147,7 +147,7 @@ var parser = require('../lib/parser');
     tokens: [
       { type: 'ScriptTag',
         attributes: [],
-        script: 'foo<bar;',
+        inner: [ { type: 'Data', source: 'foo<bar;' } ],
         source: '<script>foo<bar;</script>' }
     ]
   },
@@ -158,7 +158,7 @@ var parser = require('../lib/parser');
     tokens: [
       { type: 'StyleTag',
         attributes: [],
-        style: 'jeremiah <candy ',
+        inner: [ { type: 'Data', source: 'jeremiah <candy ' } ],
         source: '<style>jeremiah <candy </style>' }
     ]
   },
@@ -167,6 +167,10 @@ var parser = require('../lib/parser');
     source: '<![CDATA[Now <blink>THIS</blink> is real CDATA...]]>',
     tokens: [
       { type: 'CDATA',
+        inner: [
+          { type: 'Data',
+            source: 'Now <blink>THIS</blink> is real CDATA...' }
+        ],
         source: '<![CDATA[Now <blink>THIS</blink> is real CDATA...]]>' }
     ]
   },
@@ -209,6 +213,55 @@ var parser = require('../lib/parser');
   {
     source: '<?= bar ?>',
     tokens: [ { source: '<?= bar ?>' } ]
+  },
+  
+  // it must be possible to embed processing instructions in script contents
+  {
+    source: '<script>foo; <?=bar?>; fubar</script>',
+    tokens: [
+      { type: 'ScriptTag',
+        attributes: [],
+        inner: [
+          { type: 'Data',
+            source: 'foo; ' },
+          { source: '<?=bar?>' },
+          { type: 'Data',
+            source: '; fubar' }          
+        ],
+        source: '<script>foo; <?=bar?>; fubar</script>' }
+    ]
+  },
+  
+  // processing instruction embeded in style contents
+  {
+    source: '<style>foo; <?=bar?>; fubar</style>',
+    tokens: [
+      { type: 'StyleTag',
+        attributes: [],
+        inner: [
+          { type: 'Data',
+            source: 'foo; ' },
+          { source: '<?=bar?>' },
+          { type: 'Data',
+            source: '; fubar' }          
+        ],
+        source: '<style>foo; <?=bar?>; fubar</style>' }
+    ]
+  },
+  
+  {
+    source: '<![CDATA[foo; <?=bar?>; fubar]]>',
+    tokens: [
+      { type: 'CDATA',
+        inner: [
+          { type: 'Data',
+            source: 'foo; ' },
+          { source: '<?=bar?>' },
+          { type: 'Data',
+            source: '; fubar' }          
+        ],
+        source: '<![CDATA[foo; <?=bar?>; fubar]]>' }
+    ]
   }
 
 ].forEach(function (test) {
