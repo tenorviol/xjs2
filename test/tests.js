@@ -7,6 +7,9 @@ module.exports = [
     tokens: [
       { type: 'Data',
         source: 'foo & bar &amp; fubar' }
+    ],
+    code: [
+      'out.raw("foo & bar &amp; fubar");'
     ]
   },
   
@@ -33,6 +36,9 @@ module.exports = [
         ],
         close: '',
         source: '<img id="double \'quoted\'" src="http://google.com/?search=foo&bar">' }
+    ],
+    code: [
+      'out.raw("<img id=\\"double \'quoted\'\\" src=\\"http://google.com/?search=foo&bar\\">");'
     ]
   },
   
