@@ -101,8 +101,6 @@ Comment
     };
   }
 
-//MarkupDeclaration
-
 ProcessingInstruction
   = JsProcessingInstruction
   / OutputProcessingInstruction
@@ -121,6 +119,8 @@ OutputProcessingInstruction
       source: '<?=' + text.join("") + '?>'
     };
   }
+
+
 
 Attributes
   = Attribute*
@@ -191,6 +191,9 @@ CDATAData
     }
   }
 
+Ws
+  = space:[\t\n\r ]*  { return space.join(""); }
+
 
 
 DataText
@@ -218,9 +221,6 @@ CommentText
 
 ProcessingInstructionText
   = !'?>' c:Text { return c; }
-
-Ws
-  = space:(' ' / '\t' / '\n' / '\r')*  { return space.join(""); }
 
 
 

@@ -1,4 +1,4 @@
-var parser = require('../lib/parser');
+var lexer = require('../lib/lexer');
 
 [
 
@@ -215,7 +215,7 @@ var parser = require('../lib/parser');
     tokens: [ { source: '<?= bar ?>' } ]
   },
   
-  // it must be possible to embed processing instructions in script contents
+  // script embeded processing instruction
   {
     source: '<script>foo; <?=bar?>; fubar</script>',
     tokens: [
@@ -232,7 +232,7 @@ var parser = require('../lib/parser');
     ]
   },
   
-  // processing instruction embeded in style contents
+  // style embeded processing instruction
   {
     source: '<style>foo; <?=bar?>; fubar</style>',
     tokens: [
@@ -249,6 +249,7 @@ var parser = require('../lib/parser');
     ]
   },
   
+  // cdata embeded processing instruction
   {
     source: '<![CDATA[foo; <?=bar?>; fubar]]>',
     tokens: [
@@ -270,12 +271,12 @@ var parser = require('../lib/parser');
     var toThrowOrNot = test.error ? "throws" : "doesNotThrow";
     assert[toThrowOrNot](function () {
       try {
-        var result = parser.parse(test.source);
+        var result = lexer.parse(test.source);
         //console.log(result);
         assert.equal(test.source, joinSources(result));
         test.tokens && assert.deepEqual(test.tokens, result);
       } catch (e) {
-        test.error || console.log(e.toString());  // debug helper
+        /*test.error ||*/ console.log(e.toString());  // debug helper
         throw e;  // re-throw
       }
     });

@@ -1,5 +1,5 @@
-lib/parser.js: src/xjs.pegjs
-	pegjs src/xjs.pegjs lib/parser.js
+lib/lexer.js: src/xjs.pegjs
+	pegjs src/xjs.pegjs lib/lexer.js
 
 test: nodeunit
 
