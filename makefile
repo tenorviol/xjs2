@@ -1,10 +1,11 @@
 lib/parser.js: src/xjs.pegjs
 	pegjs src/xjs.pegjs lib/parser.js
 
+clean:
+	rm lib/parser.js
+
 test: nodeunit
 
 nodeunit:
-	nodeunit test/*.test.js
-
-clean:
-	rm lib/parser.js
+	nodeunit test/parser.test.js
+	nodeunit test/interpreter.test.js
