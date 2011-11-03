@@ -5,3 +5,6 @@ test: nodeunit
 
 nodeunit:
 	nodeunit test
+
+clean:
+	rm lib/lexer.js
