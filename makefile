@@ -4,7 +4,7 @@ lib/lexer.js: src/xjs.pegjs
 test: nodeunit
 
 nodeunit:
-	nodeunit test
+	nodeunit test/*.test.js
 
 clean:
 	rm lib/lexer.js
