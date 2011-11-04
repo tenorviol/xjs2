@@ -87,6 +87,9 @@ module.exports = [
         ],
         closed: true,
         source: '<中国:Nonsense 义勇军进行曲="Chinese characters I copied from wikipedia" />' }
+    ],
+    code: [
+      'out.raw("<中国:Nonsense 义勇军进行曲=\\"Chinese characters I copied from wikipedia\\" />");'
     ]
   },
   
@@ -104,6 +107,11 @@ module.exports = [
         name: 'div',
         end: true,
         source: '</div>' }
+    ],
+    code: [
+      'out.raw("<div id=\\"foo\\">");',
+      'out.raw("bar");',
+      'out.raw("</div>");'
     ]
   },
   
@@ -143,6 +151,19 @@ module.exports = [
         name: 'html',
         end: true,
         source: '</html>' }
+    ],
+    code: [
+      'out.raw("<!DOCTYPE html>");',
+      'out.raw("\\n");',
+      'out.raw("<html>");',
+      'out.raw("\\n  ");',
+      'out.raw("<head>");',
+      'out.raw("</head>");',
+      'out.raw("\\n  ");',
+      'out.raw("<body>");',
+      'out.raw("</body>");',
+      'out.raw("\\n");',
+      'out.raw("</html>");'
     ]
   },
   
@@ -151,9 +172,17 @@ module.exports = [
     source: '<script>foo<bar;</script>',
     tokens: [
       { type: 'ScriptTag',
+        name: 'script',
         attributes: [],
         inner: [ { type: 'Data', source: 'foo<bar;' } ],
         source: '<script>foo<bar;</script>' }
+    ],
+    code: [
+      'out.raw("<script>");',
+      'out.state = "script";',
+      'out.raw("foo<bar;");',
+      'out.raw("</script>");',
+      'out.state = "Data";'
     ]
   },
   
@@ -162,9 +191,17 @@ module.exports = [
     source: '<style>jeremiah <candy </style>',
     tokens: [
       { type: 'StyleTag',
+        name: 'style',
         attributes: [],
         inner: [ { type: 'Data', source: 'jeremiah <candy ' } ],
         source: '<style>jeremiah <candy </style>' }
+    ],
+    code: [
+      'out.raw("<style>");',
+      'out.state = "style";',
+      'out.raw("jeremiah <candy ");',
+      'out.raw("</style>");',
+      'out.state = "Data";'
     ]
   },
   
@@ -177,12 +214,22 @@ module.exports = [
             source: 'Now <blink>THIS</blink> is real CDATA...' }
         ],
         source: '<![CDATA[Now <blink>THIS</blink> is real CDATA...]]>' }
+    ],
+    code: [
+      'out.raw("<![CDATA[");',
+      'out.state = "CDATA";',
+      'out.raw("Now <blink>THIS</blink> is real CDATA...");',
+      'out.raw("]]>");',
+      'out.state = "Data";'
     ]
   },
   
   {
     source: '<!-- comment -->',
-    tokens: [ { type: 'Comment', source: '<!-- comment -->' } ]
+    tokens: [ { type: 'Comment', source: '<!-- comment -->' } ],
+    code: [
+      'out.raw("<!-- comment -->");'
+    ]
   },
   
   {
@@ -200,6 +247,10 @@ module.exports = [
     tokens: [
       { type: 'Comment', source: '<!---->' },
       { type: 'Data', source: ' LEGAL COMMENT!!!' }
+    ],
+    code: [
+      'out.raw("<!---->");',
+      'out.raw(" LEGAL COMMENT!!!");'
     ]
   },
   
@@ -211,13 +262,27 @@ module.exports = [
   // js processing instruction
   {
     source: '<?js var foo="bar" ?>',
-    tokens: [ { source: '<?js var foo="bar" ?>' } ]
+    tokens: [
+      { type: 'PIjs',
+        script: ' var foo="bar" ',
+        source: '<?js var foo="bar" ?>' }
+    ],
+    code: [
+      ' var foo="bar" '
+    ]
   },
   
   // js processing instruction
   {
     source: '<?= bar ?>',
-    tokens: [ { source: '<?= bar ?>' } ]
+    tokens: [
+      { type: 'PIout',
+        script: ' bar ',
+        source: '<?= bar ?>' }
+    ],
+    code: [
+      'out.write( bar );'
+    ]
   },
   
   // script embeded processing instruction
@@ -225,15 +290,27 @@ module.exports = [
     source: '<script>foo; <?=bar?>; fubar</script>',
     tokens: [
       { type: 'ScriptTag',
+        name: 'script',
         attributes: [],
         inner: [
           { type: 'Data',
             source: 'foo; ' },
-          { source: '<?=bar?>' },
+          { type: 'PIout',
+            script: 'bar',
+            source: '<?=bar?>' },
           { type: 'Data',
             source: '; fubar' }          
         ],
         source: '<script>foo; <?=bar?>; fubar</script>' }
+    ],
+    code: [
+      'out.raw("<script>");',
+      'out.state = "script";',
+      'out.raw("foo; ");',
+      'out.write(bar);',
+      'out.raw("; fubar");',
+      'out.raw("</script>");',
+      'out.state = "Data";'
     ]
   },
   
@@ -242,15 +319,27 @@ module.exports = [
     source: '<style>foo; <?=bar?>; fubar</style>',
     tokens: [
       { type: 'StyleTag',
+        name: 'style',
         attributes: [],
         inner: [
           { type: 'Data',
             source: 'foo; ' },
-          { source: '<?=bar?>' },
+          { type: 'PIout',
+            script: 'bar',
+            source: '<?=bar?>' },
           { type: 'Data',
             source: '; fubar' }          
         ],
         source: '<style>foo; <?=bar?>; fubar</style>' }
+    ],
+    code: [
+      'out.raw("<style>");',
+      'out.state = "style";',
+      'out.raw("foo; ");',
+      'out.write(bar);',
+      'out.raw("; fubar");',
+      'out.raw("</style>");',
+      'out.state = "Data";'
     ]
   },
   
@@ -262,11 +351,22 @@ module.exports = [
         inner: [
           { type: 'Data',
             source: 'foo; ' },
-          { source: '<?=bar?>' },
+          { type: 'PIout',
+            script: 'bar',
+            source: '<?=bar?>' },
           { type: 'Data',
             source: '; fubar' }          
         ],
         source: '<![CDATA[foo; <?=bar?>; fubar]]>' }
+    ],
+    code: [
+      'out.raw("<![CDATA[");',
+      'out.state = "CDATA";',
+      'out.raw("foo; ");',
+      'out.write(bar);',
+      'out.raw("; fubar");',
+      'out.raw("]]>");',
+      'out.state = "Data";'
     ]
   }
 

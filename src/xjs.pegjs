@@ -32,6 +32,7 @@ ScriptTag
   = '<script' attributes:Attributes '>' script:ScriptInnards '</script>' {
     return {
       type: "ScriptTag",
+      name: "script",
       attributes: attributes,
       inner: script,
       source: "<script" + joinSources(attributes) + ">" + joinSources(script) + "</script>"
@@ -47,6 +48,7 @@ StyleTag
   = '<style' attributes:Attributes '>' style:StyleInnards '</style>' {
     return {
       type: "StyleTag",
+      name: "style",
       attributes: attributes,
       inner: style,
       source: "<style" + joinSources(attributes) + ">" + joinSources(style) + "</style>"
@@ -109,6 +111,8 @@ JsProcessingInstruction
   = '<?js' text:ProcessingInstructionText* '?>'  {
     // TODO: lots of stuff, e.g. '?>' could be in a comment or string
     return {
+      type: 'PIjs',
+      script: text.join(""),
       source: '<?js' + text.join("") + '?>'
     };
   }
@@ -116,6 +120,8 @@ JsProcessingInstruction
 OutputProcessingInstruction
   = '<?=' text:ProcessingInstructionText* '?>' {
     return {
+      type: 'PIout',
+      script: text.join(""),
       source: '<?=' + text.join("") + '?>'
     };
   }
