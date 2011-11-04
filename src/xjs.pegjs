@@ -59,13 +59,13 @@ StyleInnards
     )*
 
 StartTag
-  = '<' name:Name attributes:Attributes close:'/'? '>' {
+  = '<' name:Name attributes:Attributes w:Ws closed:'/'? '>' {
     return {
       type: 'StartTag',
       name: name,
       attributes: attributes,
-      close: close,
-      source: "<" + name + joinSources(attributes) + close + ">"
+      closed: closed === '/',
+      source: "<" + name + joinSources(attributes) + w + closed + ">"
     };
   }
 

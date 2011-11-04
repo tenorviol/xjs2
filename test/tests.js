@@ -34,12 +34,10 @@ module.exports = [
             value: '"http://google.com/?search=foo&bar"',
             source: ' src="http://google.com/?search=foo&bar"' }
         ],
-        close: '',
+        closed: false,
         source: '<img id="double \'quoted\'" src="http://google.com/?search=foo&bar">' }
     ],
-    code: [
-      'out.raw("<img id=\\"double \'quoted\'\\" src=\\"http://google.com/?search=foo&bar\\">");'
-    ]
+    code: null
   },
   
   // Tag: self closing element with attributes
@@ -56,8 +54,11 @@ module.exports = [
             value: '\'http://google.com/favicon.ico\'',
             source: ' src=\'http://google.com/favicon.ico\'' }
         ],
-        close: '/',
+        closed: true,
         source: '<img id=\'single "quoted"\' src=\'http://google.com/favicon.ico\'/>' }
+    ],
+    code: [
+      'out.raw("<img id=\'single \\"quoted\\"\' src=\'http://google.com/favicon.ico\'/>");'
     ]
   },
   
@@ -75,7 +76,7 @@ module.exports = [
   
   // foreign elements may contain unicode characters
   {
-    source: '<中国:Nonsense 义勇军进行曲="Chinese characters I copied from wikipedia">',
+    source: '<中国:Nonsense 义勇军进行曲="Chinese characters I copied from wikipedia" />',
     tokens: [
       { type: 'StartTag',
         name: '中国:Nonsense',
@@ -84,8 +85,8 @@ module.exports = [
             value: '"Chinese characters I copied from wikipedia"',
             source: ' 义勇军进行曲="Chinese characters I copied from wikipedia"' }
         ],
-        close: '',
-        source: '<中国:Nonsense 义勇军进行曲="Chinese characters I copied from wikipedia">' }
+        closed: true,
+        source: '<中国:Nonsense 义勇军进行曲="Chinese characters I copied from wikipedia" />' }
     ]
   },
   
@@ -96,7 +97,7 @@ module.exports = [
       { type: 'StartTag',
         name: 'div',
         attributes: [ { name: 'id', value: '"foo"', source: ' id="foo"' } ],
-        close: '',
+        closed: false,
         source: '<div id="foo">' },
       { type: 'Data', source: 'bar' },
       { type: 'EndTag',
@@ -115,13 +116,13 @@ module.exports = [
       { type: 'StartTag',
         name: 'html',
         attributes: [],
-        close: '',
+        closed: false,
         source: '<html>' },
       { type: 'Data', source: '\n  ' },
       { type: 'StartTag',
         name: 'head',
         attributes: [],
-        close: '',
+        closed: false,
         source: '<head>' },
       { type: 'EndTag',
         name: 'head',
@@ -131,7 +132,7 @@ module.exports = [
       { type: 'StartTag',
         name: 'body',
         attributes: [],
-        close: '',
+        closed: false,
         source: '<body>' },
       { type: 'EndTag',
         name: 'body',

@@ -10,8 +10,11 @@ tests.forEach(function (test) {
   }
   
   exports[test.source] = function (assert) {
-    var result = interpreter.interpret(test.source);
-    assert.deepEqual(test.code, result);
+    var toThrowOrNot = test.code ? "doesNotThrow" : "throws";
+    assert[toThrowOrNot](function () {
+      var result = interpreter.interpret(test.source);
+      assert.deepEqual(test.code, result);
+    });
     assert.done();
   };
   
