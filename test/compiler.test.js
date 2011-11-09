@@ -27,12 +27,14 @@ var StringStream = require('../lib/StringStream');
     code: 'var crypto = require("crypto");',
     expect: ''
   },
-  //{
-  //  code: 'console.log(require.resolve("./interpreter.test"));',
-  //},
-  //{
-  //  code: 'console.log(require.cache);',
-  //},
+  {
+    code: 'out.write(require.resolve("./interpreter.test"));',
+    expect: __dirname + '/interpreter.test.js'
+  },
+  {
+    code: 'out.write(typeof require.cache);',
+    expect: 'object'
+  },
   {
     code: 'out.write(__filename)',
     expect: __dirname + '/mytest'
