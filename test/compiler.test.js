@@ -54,19 +54,15 @@ var StringStream = require('../lib/StringStream');
 ].forEach(function (test) {
   
   exports[test.code] = function (assert) {
-    var template = compiler.compile(test.code, __dirname+'/mytest');
+    var template = compiler.compile(test.code, __dirname + '/mytest');
     
-    var out = new XjsStream();
     var result = new StringStream();
-    out.pipe(result);
-    
     result.on('end', function () {
       assert.equal(test.expect, result.toString());
       assert.done();
     });
     
-    template(out);
-    out.end();
+    template(result);
   };
   
 });
