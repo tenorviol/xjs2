@@ -7,5 +7,4 @@ clean:
 test: nodeunit
 
 nodeunit:
-	nodeunit test/parser.test.js
-	nodeunit test/interpreter.test.js
+	nodeunit test/*.test.js
