@@ -50,11 +50,11 @@ var StringStream = require('../lib/StringStream');
       '}, 50);'
     ].join("\n"),
     expect: 'foo'
-  },
+  }
 ].forEach(function (test) {
   
   exports[test.code] = function (assert) {
-    var template = compiler.compile(test.code, { filename: __dirname+'/mytest' });
+    var template = compiler.compile(test.code, __dirname+'/mytest');
     
     var out = new XjsStream();
     var result = new StringStream();
