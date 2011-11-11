@@ -1,3 +1,5 @@
+var tokens = require('../lib/tokens');
+
 module.exports = [
 
   // data
@@ -5,7 +7,7 @@ module.exports = [
   {
     source: 'foo & bar &amp; fubar',
     tokens: [
-      { type: 'Data',
+      { type: tokens.Data,
         source: 'foo & bar &amp; fubar' }
     ],
     code: [
@@ -24,7 +26,7 @@ module.exports = [
   {
     source: '<img id="double \'quoted\'" src="http://google.com/?search=foo&bar">',
     tokens: [
-      { type: 'StartTag',
+      { type: tokens.StartTag,
         name: 'img',
         attributes: [
           { name: 'id',
@@ -44,7 +46,7 @@ module.exports = [
   {
     source: "<img id='single \"quoted\"' src='http://google.com/favicon.ico'/>",
     tokens: [
-      { type: 'StartTag',
+      { type: tokens.StartTag,
         name: 'img',
         attributes: [
           { name: 'id',
@@ -78,7 +80,7 @@ module.exports = [
   {
     source: '<中国:Nonsense 义勇军进行曲="Chinese characters I copied from wikipedia" />',
     tokens: [
-      { type: 'StartTag',
+      { type: tokens.StartTag,
         name: '中国:Nonsense',
         attributes: [
           { name: '义勇军进行曲',
@@ -97,13 +99,13 @@ module.exports = [
   {
     source: '<div id="foo">bar</div>',
     tokens: [
-      { type: 'StartTag',
+      { type: tokens.StartTag,
         name: 'div',
         attributes: [ { name: 'id', value: '"foo"', source: ' id="foo"' } ],
         closed: false,
         source: '<div id="foo">' },
-      { type: 'Data', source: 'bar' },
-      { type: 'EndTag',
+      { type: tokens.Data, source: 'bar' },
+      { type: tokens.EndTag,
         name: 'div',
         end: true,
         source: '</div>' }
@@ -119,35 +121,35 @@ module.exports = [
   {
     source: '<!DOCTYPE html>\n<html>\n  <head></head>\n  <body></body>\n</html>',
     tokens: [
-      { type: 'DOCTYPE', source: '<!DOCTYPE html>' },
-      { type: 'Data', source: '\n' },
-      { type: 'StartTag',
+      { type: tokens.DOCTYPE, source: '<!DOCTYPE html>' },
+      { type: tokens.Data, source: '\n' },
+      { type: tokens.StartTag,
         name: 'html',
         attributes: [],
         closed: false,
         source: '<html>' },
-      { type: 'Data', source: '\n  ' },
-      { type: 'StartTag',
+      { type: tokens.Data, source: '\n  ' },
+      { type: tokens.StartTag,
         name: 'head',
         attributes: [],
         closed: false,
         source: '<head>' },
-      { type: 'EndTag',
+      { type: tokens.EndTag,
         name: 'head',
         end: true,
         source: '</head>' },
-      { type: 'Data', source: '\n  ' },
-      { type: 'StartTag',
+      { type: tokens.Data, source: '\n  ' },
+      { type: tokens.StartTag,
         name: 'body',
         attributes: [],
         closed: false,
         source: '<body>' },
-      { type: 'EndTag',
+      { type: tokens.EndTag,
         name: 'body',
         end: true,
         source: '</body>' },
-      { type: 'Data', source: '\n' },
-      { type: 'EndTag',
+      { type: tokens.Data, source: '\n' },
+      { type: tokens.EndTag,
         name: 'html',
         end: true,
         source: '</html>' }
@@ -171,10 +173,10 @@ module.exports = [
   {
     source: '<script>foo<bar;</script>',
     tokens: [
-      { type: 'ScriptTag',
+      { type: tokens.ScriptTag,
         name: 'script',
         attributes: [],
-        inner: [ { type: 'Data', source: 'foo<bar;' } ],
+        inner: [ { type: tokens.Data, source: 'foo<bar;' } ],
         source: '<script>foo<bar;</script>' }
     ],
     code: [
@@ -190,10 +192,10 @@ module.exports = [
   {
     source: '<style>jeremiah <candy </style>',
     tokens: [
-      { type: 'StyleTag',
+      { type: tokens.StyleTag,
         name: 'style',
         attributes: [],
-        inner: [ { type: 'Data', source: 'jeremiah <candy ' } ],
+        inner: [ { type: tokens.Data, source: 'jeremiah <candy ' } ],
         source: '<style>jeremiah <candy </style>' }
     ],
     code: [
@@ -208,9 +210,9 @@ module.exports = [
   {
     source: '<![CDATA[Now <blink>THIS</blink> is real CDATA...]]>',
     tokens: [
-      { type: 'CDATA',
+      { type: tokens.CDATA,
         inner: [
-          { type: 'Data',
+          { type: tokens.Data,
             source: 'Now <blink>THIS</blink> is real CDATA...' }
         ],
         source: '<![CDATA[Now <blink>THIS</blink> is real CDATA...]]>' }
@@ -226,7 +228,7 @@ module.exports = [
   
   {
     source: '<!-- comment -->',
-    tokens: [ { type: 'Comment', source: '<!-- comment -->' } ],
+    tokens: [ { type: tokens.Comment, source: '<!-- comment -->' } ],
     code: [
       'out.raw("<!-- comment -->");'
     ]
@@ -245,8 +247,8 @@ module.exports = [
   {
     source: '<!----> LEGAL COMMENT!!!',
     tokens: [
-      { type: 'Comment', source: '<!---->' },
-      { type: 'Data', source: ' LEGAL COMMENT!!!' }
+      { type: tokens.Comment, source: '<!---->' },
+      { type: tokens.Data, source: ' LEGAL COMMENT!!!' }
     ],
     code: [
       'out.raw("<!---->");',
@@ -263,7 +265,7 @@ module.exports = [
   {
     source: '<?js var foo="bar" ?>',
     tokens: [
-      { type: 'PIjs',
+      { type: tokens.PIjs,
         script: ' var foo="bar" ',
         source: '<?js var foo="bar" ?>' }
     ],
@@ -276,7 +278,7 @@ module.exports = [
   {
     source: '<?= bar ?>',
     tokens: [
-      { type: 'PIout',
+      { type: tokens.PIout,
         script: ' bar ',
         source: '<?= bar ?>' }
     ],
@@ -289,16 +291,16 @@ module.exports = [
   {
     source: '<script>foo; <?=bar?>; fubar</script>',
     tokens: [
-      { type: 'ScriptTag',
+      { type: tokens.ScriptTag,
         name: 'script',
         attributes: [],
         inner: [
-          { type: 'Data',
+          { type: tokens.Data,
             source: 'foo; ' },
-          { type: 'PIout',
+          { type: tokens.PIout,
             script: 'bar',
             source: '<?=bar?>' },
-          { type: 'Data',
+          { type: tokens.Data,
             source: '; fubar' }          
         ],
         source: '<script>foo; <?=bar?>; fubar</script>' }
@@ -318,16 +320,16 @@ module.exports = [
   {
     source: '<style>foo; <?=bar?>; fubar</style>',
     tokens: [
-      { type: 'StyleTag',
+      { type: tokens.StyleTag,
         name: 'style',
         attributes: [],
         inner: [
-          { type: 'Data',
+          { type: tokens.Data,
             source: 'foo; ' },
-          { type: 'PIout',
+          { type: tokens.PIout,
             script: 'bar',
             source: '<?=bar?>' },
-          { type: 'Data',
+          { type: tokens.Data,
             source: '; fubar' }          
         ],
         source: '<style>foo; <?=bar?>; fubar</style>' }
@@ -347,14 +349,14 @@ module.exports = [
   {
     source: '<![CDATA[foo; <?=bar?>; fubar]]>',
     tokens: [
-      { type: 'CDATA',
+      { type: tokens.CDATA,
         inner: [
-          { type: 'Data',
+          { type: tokens.Data,
             source: 'foo; ' },
-          { type: 'PIout',
+          { type: tokens.PIout,
             script: 'bar',
             source: '<?=bar?>' },
-          { type: 'Data',
+          { type: tokens.Data,
             source: '; fubar' }          
         ],
         source: '<![CDATA[foo; <?=bar?>; fubar]]>' }

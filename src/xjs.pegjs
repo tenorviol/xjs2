@@ -1,4 +1,6 @@
 {
+  var tokens = require('./tokens');
+
   function joinSources(objects) {
     var source = '';
     objects.forEach(function (object) {
@@ -23,7 +25,7 @@ start
 DoctypeHtml5
   = '<!DOCTYPE html>' {
     return {
-      type: "DOCTYPE",
+      type: tokens.DOCTYPE,
       source: "<!DOCTYPE html>"
     };
   }
@@ -31,7 +33,7 @@ DoctypeHtml5
 ScriptTag
   = '<script' attributes:Attributes '>' script:ScriptInnards '</script>' {
     return {
-      type: "ScriptTag",
+      type: tokens.ScriptTag,
       name: "script",
       attributes: attributes,
       inner: script,
@@ -47,7 +49,7 @@ ScriptInnards
 StyleTag
   = '<style' attributes:Attributes '>' style:StyleInnards '</style>' {
     return {
-      type: "StyleTag",
+      type: tokens.StyleTag,
       name: "style",
       attributes: attributes,
       inner: style,
@@ -63,7 +65,7 @@ StyleInnards
 StartTag
   = '<' name:Name attributes:Attributes w:Ws closed:'/'? '>' {
     return {
-      type: 'StartTag',
+      type: tokens.StartTag,
       name: name,
       attributes: attributes,
       closed: closed === '/',
@@ -74,7 +76,7 @@ StartTag
 EndTag
   = '</' name:Name '>' {
     return {
-      type: 'EndTag',
+      type: tokens.EndTag,
       name: name,
       end: true,
       source: "</" + name + ">"
@@ -84,7 +86,7 @@ EndTag
 CDATA
   = '<![CDATA[' data:CDATAInnards ']]>' {
     return {
-      type: 'CDATA',
+      type: tokens.CDATA,
       inner: data,
       source: '<![CDATA[' + joinSources(data) + ']]>'
     }
@@ -98,7 +100,7 @@ CDATAInnards
 Comment
   = '<!--' !('>' / '->') text:CommentText* '-->' {
     return {
-      type: 'Comment',
+      type: tokens.Comment,
       source: '<!--' + text.join("") + '-->'
     };
   }
@@ -111,7 +113,7 @@ JsProcessingInstruction
   = '<?js' text:ProcessingInstructionText* '?>'  {
     // TODO: lots of stuff, e.g. '?>' could be in a comment or string
     return {
-      type: 'PIjs',
+      type: tokens.PIjs,
       script: text.join(""),
       source: '<?js' + text.join("") + '?>'
     };
@@ -120,7 +122,7 @@ JsProcessingInstruction
 OutputProcessingInstruction
   = '<?=' text:ProcessingInstructionText* '?>' {
     return {
-      type: 'PIout',
+      type: tokens.PIout,
       script: text.join(""),
       source: '<?=' + text.join("") + '?>'
     };
@@ -147,7 +149,7 @@ ValueAttribute
 EmptyAttribute
   = w:Ws name:Name {
     return {
-      type: "Attribute",
+      type: tokens.Attribute,
       name: name,
       source: w + name
     };
@@ -168,7 +170,7 @@ AttributeValueSingleQuoted
 Data
   = data:DataText+ {
     return {
-      type: 'Data',
+      type: tokens.Data,
       source: data.join("")
     };
   }
@@ -176,7 +178,7 @@ Data
 ScriptData
   = data:ScriptText+ {
     return {
-      type: 'Data',
+      type: tokens.Data,
       source: data.join("")
     };
   }
@@ -184,7 +186,7 @@ ScriptData
 StyleData
   = data:StyleText+ {
     return {
-      type: 'Data',
+      type: tokens.Data,
       source: data.join("")
     };
   }
@@ -192,7 +194,7 @@ StyleData
 CDATAData
   = data:CDATAText+ {
     return {
-      type: 'Data',
+      type: tokens.Data,
       source: data.join("")
     }
   }
