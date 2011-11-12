@@ -13,7 +13,7 @@ tests.forEach(function (test) {
     var toThrowOrNot = test.code ? "doesNotThrow" : "throws";
     assert[toThrowOrNot](function () {
       var result = interpreter.interpret(test.source);
-      assert.deepEqual(test.code, result);
+      assert.equal(test.code.join('\n'), result);
     });
     assert.done();
   };
