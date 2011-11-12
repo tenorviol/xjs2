@@ -23,7 +23,6 @@ lib/namedCharacterEntities.js:
 	    print "module.exports = {"; \
 	  } \
 	  { \
-	    comment = ""; \
 	    if (match($$1, /[0-9A-Fa-f]{5,}/)) { \
 	      print "  // " $$0; \
 	      next; \
