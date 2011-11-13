@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+// read filename from process.argv
+// compile
+// execute to process.stdout
