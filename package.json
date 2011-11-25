@@ -1,0 +1,13 @@
+{
+  "name" : "xjs",
+  "description" : "A template language for node.js mixing html and server-side javascript",
+  "keywords" : [ "template", "xml", "html" ],
+  "version" : "0.1.6",
+  "author" : "Christopher Johnson",
+  "engines" : { "node" : "0.6" },
+  "bin": { "xjs" : "./bin/xjs" },
+  "repository" : {
+    "type" : "git",
+    "url" : "git://github.com/tenorviol/xjs.git"
+  }
+}
