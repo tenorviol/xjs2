@@ -34,7 +34,7 @@ function render(filename, globals) {
       req: req,
       res: res
     };
-    for (var i in context) {
+    for (var i in globals) {
       context[i] = globals[i];
     }
     template(res, context);
