@@ -1,0 +1,21 @@
+<?js
+
+  var util = require('util');
+  
+  for (var i in process) {
+    if (['stdin', 'stdout', 'stderr'].indexOf(i) !== -1 || typeof process[i] === 'function') {
+      continue;
+    }
+    if (typeof process[i] === 'object' && process[i].length === undefined) {
+      for (var j in process[i]) {
+        if (typeof process[i][j] === 'function') {
+          continue;
+        }
+        out.write(i + '.' + j + ' : ' + util.inspect(process[i][j]) + '\n');
+      }
+    } else {
+      out.write(i + ' : ' + util.inspect(process[i]) + '\n');
+    }
+  }
+
+?>
