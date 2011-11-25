@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var interpreter = require('../lib/interpreter');
-var compiler = require('../lib/compiler');
+var xjs = require('../index');
 
 if (process.argv.length === 2) {
   var filename = '/dev/stdin';
@@ -13,7 +11,5 @@ if (process.argv.length === 2) {
   process.exit(1);
 }
 
-var source = fs.readFileSync(filename, 'utf8');
-var script = interpreter.interpret(source);
-var template = compiler.compile(script, filename);
+var template = xjs.template(filename);
 template(process.stdout);
