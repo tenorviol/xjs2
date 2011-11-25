@@ -1,5 +1,19 @@
 #!/usr/bin/env node
 
-// read filename from process.argv
-// compile
-// execute to process.stdout
+var fs = require('fs');
+var interpreter = require('../lib/interpreter');
+var compiler = require('../lib/compiler');
+
+if (process.argv.length === 2) {
+  var filename = '/dev/stdin';
+} else if (process.argv.length === 3) {
+  var filename = process.argv[2];
+} else {
+  console.log('Usage: xjs <filename>');
+  process.exit(1);
+}
+
+var source = fs.readFileSync(filename, 'utf8');
+var script = interpreter.interpret(source);
+var template = compiler.compile(script, filename);
+template(process.stdout);
